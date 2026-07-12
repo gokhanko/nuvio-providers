@@ -1,0 +1,25 @@
+[
+  {
+    "id": "com.fullhd.providers",
+    "name": "FullHD Film İzlesene",
+    "description": "Türkçe dublaj filmler için FullHD Film İzlesene kaynağı",
+    "version": "1.0.0",
+    "author": "Antigravity",
+    "supportedTypes": [
+      "movie"
+    ],
+    "filename": "providers/fullhdfilmizlesene.js",
+    "enabled": false,
+    "logo": "",
+    "contentLanguage": [
+      "tr"
+    ],
+    "formats": [
+      "mp4",
+      "mkv"
+    ],
+    "limited": false,
+    "disabledPlatforms": [],
+    "supportsExternalPlayer": true
+  }
+]
