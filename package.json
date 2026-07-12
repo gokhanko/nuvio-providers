@@ -19,5 +19,8 @@
         "streaming",
         "providers"
     ],
-    "license": "GPL-3.0"
+    "license": "GPL-3.0",
+    "dependencies": {
+        "playwright": "^1.61.1"
+    }
 }

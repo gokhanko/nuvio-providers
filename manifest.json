@@ -19,7 +19,9 @@
       ],
       "formats": [
         "mp4",
-        "mkv"
+        "mkv",
+        "hls",
+        "m3u8"
       ],
       "limited": false,
       "disabledPlatforms": [],
