@@ -266,7 +266,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                     
                     if (finalUrl) {
                         streams.push({
-                            name: `FHD [${sourceName}]`,
+                            name: `[DB] ${finalUrl.substring(0, 45)}`,
                             title: `Stream ${i}`,
                             url: finalUrl,
                             quality: "1080p",
