@@ -184,7 +184,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                                         format: "hls",
                                         type: "hls",
                                         headers: {
-                                            "Referer": "https://rapidvid.net/"
+                                            "Referer": "https://rapidvid.net/",
+                                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                                         }
                                     });
                                     continue; // Successfully extracted

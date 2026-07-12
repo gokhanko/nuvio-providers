@@ -1,6 +1,6 @@
 /**
  * fullhdfilmizlesene - Built from src/fullhdfilmizlesene/
- * Generated: 2026-07-12T06:45:50.599Z
+ * Generated: 2026-07-12T06:51:19.284Z
  */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -195,7 +195,8 @@ function getStreams(tmdbId, mediaType, season, episode) {
                       format: "hls",
                       type: "hls",
                       headers: {
-                        "Referer": "https://rapidvid.net/"
+                        "Referer": "https://rapidvid.net/",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                       }
                     });
                     continue;
