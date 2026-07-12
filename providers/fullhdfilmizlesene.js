@@ -1,6 +1,6 @@
 /**
  * fullhdfilmizlesene - Built from src/fullhdfilmizlesene/
- * Generated: 2026-07-12T07:10:21.705Z
+ * Generated: 2026-07-12T07:19:31.432Z
  */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -53,40 +53,45 @@ function rtt(str) {
     return String.fromCharCode(s.charCodeAt(0) + (s.toLowerCase() < "n" ? 13 : -13));
   });
 }
+function unpack(packedStr) {
+  const pMatch = packedStr.match(/}\('([^']*)',.*?(\d+),.*?(\d+),.*?'([^']*)'\.split/);
+  if (!pMatch)
+    return packedStr;
+  let p = pMatch[1];
+  const a = parseInt(pMatch[2]);
+  let c = parseInt(pMatch[3]);
+  const k = pMatch[4].split("|");
+  const e = function(c2) {
+    return (c2 < a ? "" : e(parseInt(c2 / a))) + ((c2 = c2 % a) > 35 ? String.fromCharCode(c2 + 29) : c2.toString(36));
+  };
+  while (c--) {
+    if (k[c]) {
+      p = p.replace(new RegExp("\\b" + e(c) + "\\b", "g"), k[c]);
+    }
+  }
+  return p;
+}
 function decodeUrl(encodedStr) {
+  if (!encodedStr)
+    return null;
+  if (encodedStr.startsWith("http"))
+    return encodedStr;
+  try {
+    let dec = typeof atob === "function" ? atob(encodedStr) : Buffer.from(encodedStr, "base64").toString("utf-8");
+    if (!/[^\x09\x0A\x0D\x20-\x7E]/.test(dec)) {
+      return dec;
+    }
+  } catch (e) {
+  }
   try {
     const rotated = rtt(encodedStr);
-    let decoded = "";
-    if (typeof atob === "function") {
-      decoded = atob(rotated);
-    } else if (typeof Buffer !== "undefined") {
-      decoded = Buffer.from(rotated, "base64").toString("utf-8");
-    } else {
-      const b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-      let o1, o2, o3, h1, h2, h3, h4, bits, i = 0, enc = "";
-      do {
-        h1 = b64.indexOf(rotated.charAt(i++));
-        h2 = b64.indexOf(rotated.charAt(i++));
-        h3 = b64.indexOf(rotated.charAt(i++));
-        h4 = b64.indexOf(rotated.charAt(i++));
-        bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
-        o1 = bits >> 16 & 255;
-        o2 = bits >> 8 & 255;
-        o3 = bits & 255;
-        if (h3 == 64)
-          enc += String.fromCharCode(o1);
-        else if (h4 == 64)
-          enc += String.fromCharCode(o1, o2);
-        else
-          enc += String.fromCharCode(o1, o2, o3);
-      } while (i < rotated.length);
-      decoded = enc;
+    let dec = typeof atob === "function" ? atob(rotated) : Buffer.from(rotated, "base64").toString("utf-8");
+    if (!/[^\x09\x0A\x0D\x20-\x7E]/.test(dec)) {
+      return dec;
     }
-    return decoded;
   } catch (e) {
-    console.log("Error decoding URL:", e);
-    return null;
   }
+  return encodedStr;
 }
 function getStreams(tmdbId, mediaType, season, episode) {
   return __async(this, null, function* () {
@@ -215,7 +220,8 @@ function getStreams(tmdbId, mediaType, season, episode) {
                   }
                 });
                 if (vidmolyRes.ok) {
-                  const vidmolyHtml = yield vidmolyRes.text();
+                  let vidmolyHtml = yield vidmolyRes.text();
+                  vidmolyHtml = unpack(vidmolyHtml);
                   const m3u8Match = vidmolyHtml.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i);
                   if (m3u8Match) {
                     const m3u8Url = m3u8Match[1];

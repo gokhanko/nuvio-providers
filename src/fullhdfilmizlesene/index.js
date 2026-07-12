@@ -9,43 +9,50 @@ function rtt(str) {
     });
 }
 
-// Decode the video URL from scx data
+function unpack(packedStr) {
+    const pMatch = packedStr.match(/}\('([^']*)',.*?(\d+),.*?(\d+),.*?'([^']*)'\.split/);
+    if (!pMatch) return packedStr;
+    let p = pMatch[1];
+    const a = parseInt(pMatch[2]);
+    let c = parseInt(pMatch[3]);
+    const k = pMatch[4].split('|');
+
+    const e = function(c) {
+        return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36));
+    };
+
+    while (c--) {
+        if (k[c]) {
+            p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
+        }
+    }
+    return p;
+}
+
 function decodeUrl(encodedStr) {
+    if (!encodedStr) return null;
+    if (encodedStr.startsWith("http")) return encodedStr;
+    
+    // Try plain base64 first
+    try {
+        let dec = typeof atob === 'function' ? atob(encodedStr) : Buffer.from(encodedStr, 'base64').toString('utf-8');
+        // If it looks like a valid string (no weird control characters except maybe some)
+        if (!/[^\x09\x0A\x0D\x20-\x7E]/.test(dec)) {
+            return dec;
+        }
+    } catch (e) {}
+
+    // Try rtt + base64
     try {
         const rotated = rtt(encodedStr);
-        // Hermes engine might not have atob available natively in all configurations, 
-        // but typically atob is supported in RN/Nuvio environments.
-        // If not, we can implement base64 decode, but let's assume it works or we use a polyfill if needed.
-        // Actually, Nuvio provides atob globally.
-        let decoded = "";
-        if (typeof atob === 'function') {
-            decoded = atob(rotated);
-        } else if (typeof Buffer !== 'undefined') {
-            decoded = Buffer.from(rotated, 'base64').toString('utf-8');
-        } else {
-            // Very simple base64 decoder fallback just in case
-            const b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-            let o1, o2, o3, h1, h2, h3, h4, bits, i = 0, enc = "";
-            do {
-                h1 = b64.indexOf(rotated.charAt(i++));
-                h2 = b64.indexOf(rotated.charAt(i++));
-                h3 = b64.indexOf(rotated.charAt(i++));
-                h4 = b64.indexOf(rotated.charAt(i++));
-                bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
-                o1 = bits >> 16 & 0xff;
-                o2 = bits >> 8 & 0xff;
-                o3 = bits & 0xff;
-                if (h3 == 64) enc += String.fromCharCode(o1);
-                else if (h4 == 64) enc += String.fromCharCode(o1, o2);
-                else enc += String.fromCharCode(o1, o2, o3);
-            } while (i < rotated.length);
-            decoded = enc;
+        let dec = typeof atob === 'function' ? atob(rotated) : Buffer.from(rotated, 'base64').toString('utf-8');
+        if (!/[^\x09\x0A\x0D\x20-\x7E]/.test(dec)) {
+            return dec;
         }
-        return decoded;
-    } catch (e) {
-        console.log("Error decoding URL:", e);
-        return null;
-    }
+    } catch (e) {}
+
+    // If all else fails, just return the original string
+    return encodedStr;
 }
 
 async function getStreams(tmdbId, mediaType, season, episode) {
@@ -206,7 +213,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                             });
                             
                             if (vidmolyRes.ok) {
-                                const vidmolyHtml = await vidmolyRes.text();
+                                let vidmolyHtml = await vidmolyRes.text();
+                                vidmolyHtml = unpack(vidmolyHtml);
                                 const m3u8Match = vidmolyHtml.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i);
                                 if (m3u8Match) {
                                     const m3u8Url = m3u8Match[1];
