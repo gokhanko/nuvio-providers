@@ -150,13 +150,55 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                     const encodedUrl = links[i];
                     if (!encodedUrl) continue;
                     
-                    const decodedUrl = decodeUrl(encodedUrl);
-                    if (decodedUrl) {
+                    const decoded = decodeUrl(encodedUrl);
+                    if (decoded && decoded.includes("rapidvid.net")) {
+                        try {
+                            const rapidRes = await fetch(decoded, {
+                                headers: {
+                                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                    "Referer": "https://www.fullhdfilmizlesene.life/"
+                                }
+                            });
+                            
+                            if (rapidRes.ok) {
+                                const rapidHtml = await rapidRes.text();
+                                const avMatch = rapidHtml.match(/av\(['"]([^'"]+)['"]\)/);
+                                if (avMatch) {
+                                    const encodedHls = avMatch[1];
+                                    
+                                    // Rapidvid decoder
+                                    let t = atob(encodedHls.split("").reverse().join(""));
+                                    let o = "";
+                                    for (let j = 0; j < t.length; j++) {
+                                        let r = "K9L"[j % 3];
+                                        let n = t.charCodeAt(j) - (r.charCodeAt(0) % 5 + 1);
+                                        o += String.fromCharCode(n);
+                                    }
+                                    const hlsUrl = atob(o);
+                                    
+                                    streams.push({
+                                        name: `FHD [${sourceName}]`,
+                                        title: `Rapidvid HLS (TR/EN)`,
+                                        url: hlsUrl,
+                                        quality: "1080p",
+                                        headers: {
+                                            "Referer": BASE_URL + "/"
+                                        }
+                                    });
+                                    continue; // Successfully extracted
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Rapidvid fetch error:", e);
+                        }
+                    }
+                    
+                    if (decoded) {
                         streams.push({
                             name: `FHD [${sourceName}]`,
                             title: `Stream ${i}`,
-                            url: decodedUrl,
-                            quality: "1080p", // Often 1080p for this site
+                            url: decoded,
+                            quality: "1080p",
                             headers: {
                                 "Referer": BASE_URL + "/"
                             }
