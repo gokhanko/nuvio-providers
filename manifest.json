@@ -1,7 +1,7 @@
 {
   "name": "Gökhan's Nuvio Repo",
   "version": "1.0.0",
-  "providers": [
+  "scrapers": [
     {
       "id": "com.fullhd.providers",
       "name": "FullHD Film İzlesene",
