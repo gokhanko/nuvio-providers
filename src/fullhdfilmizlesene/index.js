@@ -179,10 +179,12 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                                     streams.push({
                                         name: `FHD [${sourceName}]`,
                                         title: `Rapidvid HLS (TR/EN)`,
-                                        url: hlsUrl,
+                                        url: hlsUrl.includes('.m3u8') ? hlsUrl : hlsUrl + '#.m3u8',
                                         quality: "1080p",
+                                        format: "hls",
+                                        type: "hls",
                                         headers: {
-                                            "Referer": BASE_URL + "/"
+                                            "Referer": "https://rapidvid.net/"
                                         }
                                     });
                                     continue; // Successfully extracted
