@@ -158,9 +158,35 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                     if (!encodedUrl) continue;
                     
                     const decoded = decodeUrl(encodedUrl);
-                    if (decoded && decoded.includes("rapidvid.net")) {
+                    let finalUrl = decoded;
+                    
+                    if (decoded && !decoded.startsWith("http")) {
+                        const proxyUrl = watchUrl + decoded;
                         try {
-                            const rapidRes = await fetch(decoded, {
+                            const proxyRes = await fetch(proxyUrl, {
+                                headers: {
+                                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                    "Referer": watchUrl
+                                }
+                            });
+                            
+                            if (proxyRes.url && proxyRes.url !== proxyUrl && proxyRes.url.startsWith("http")) {
+                                finalUrl = proxyRes.url;
+                            } else {
+                                const proxyHtml = await proxyRes.text();
+                                const iframeMatch = proxyHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+                                if (iframeMatch && iframeMatch[1].startsWith("http")) {
+                                    finalUrl = iframeMatch[1];
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Proxy fetch error:", e);
+                        }
+                    }
+
+                    if (finalUrl && finalUrl.includes("rapidvid.net")) {
+                        try {
+                            const rapidRes = await fetch(finalUrl, {
                                 headers: {
                                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                                     "Referer": "https://www.fullhdfilmizlesene.life/"
@@ -203,9 +229,9 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                         }
                     }
                     
-                    if (decoded && (decoded.includes("vidmoly.to") || decoded.includes("vidmoly.me"))) {
+                    if (finalUrl && (finalUrl.includes("vidmoly.to") || finalUrl.includes("vidmoly.me"))) {
                         try {
-                            const vidmolyRes = await fetch(decoded, {
+                            const vidmolyRes = await fetch(finalUrl, {
                                 headers: {
                                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                                     "Referer": "https://www.fullhdfilmizlesene.life/"
@@ -238,11 +264,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                         }
                     }
                     
-                    if (decoded) {
+                    if (finalUrl) {
                         streams.push({
                             name: `FHD [${sourceName}]`,
                             title: `Stream ${i}`,
-                            url: decoded,
+                            url: finalUrl,
                             quality: "1080p",
                             headers: {
                                 "Referer": BASE_URL + "/"
