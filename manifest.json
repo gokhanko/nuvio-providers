@@ -1,12 +1,12 @@
 {
   "name": "Gökhan's Nuvio Repo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scrapers": [
     {
       "id": "com.fullhd.providers",
       "name": "FullHD Film İzlesene",
       "description": "Türkçe dublaj filmler için FullHD Film İzlesene kaynağı",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "author": "Antigravity",
       "supportedTypes": [
         "movie"

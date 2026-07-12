@@ -1,6 +1,6 @@
 /**
  * fullhdfilmizlesene - Built from src/fullhdfilmizlesene/
- * Generated: 2026-07-12T07:39:22.820Z
+ * Generated: 2026-07-12T07:45:33.068Z
  */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -268,8 +268,53 @@ function getStreams(tmdbId, mediaType, season, episode) {
               }
             }
             if (finalUrl) {
+              try {
+                const genRes = yield fetch(finalUrl, {
+                  headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer": "https://www.fullhdfilmizlesene.life/"
+                  }
+                });
+                if (genRes.ok) {
+                  let genHtml = yield genRes.text();
+                  if (genHtml.includes("eval(function(p,a,c,k,e,d)")) {
+                    genHtml = unpack(genHtml);
+                  }
+                  const m3u8Match = genHtml.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/i) || genHtml.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i);
+                  const mp4Match = genHtml.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/i);
+                  if (m3u8Match) {
+                    streams.push({
+                      name: `FHD [${sourceName}]`,
+                      title: `Extracted HLS`,
+                      url: m3u8Match[1],
+                      quality: "1080p",
+                      format: "hls",
+                      type: "hls",
+                      headers: {
+                        "Referer": finalUrl,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                      }
+                    });
+                    continue;
+                  } else if (mp4Match) {
+                    streams.push({
+                      name: `FHD [${sourceName}]`,
+                      title: `Extracted MP4`,
+                      url: mp4Match[1],
+                      quality: "1080p",
+                      headers: {
+                        "Referer": finalUrl,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                      }
+                    });
+                    continue;
+                  }
+                }
+              } catch (e) {
+                console.error("Generic fetch error:", e);
+              }
               streams.push({
-                name: `FHD [${sourceName}]`,
+                name: `[DB] ${finalUrl.substring(0, 45)}`,
                 title: `Stream ${i}`,
                 url: finalUrl,
                 quality: "1080p",
