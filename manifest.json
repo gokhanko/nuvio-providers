@@ -12,7 +12,7 @@
         "movie"
       ],
       "filename": "providers/fullhdfilmizlesene.js",
-      "enabled": false,
+      "enabled": true,
       "logo": "",
       "contentLanguage": [
         "tr"
