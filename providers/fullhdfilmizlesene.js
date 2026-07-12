@@ -1,6 +1,6 @@
 /**
  * fullhdfilmizlesene - Built from src/fullhdfilmizlesene/
- * Generated: 2026-07-12T06:55:05.895Z
+ * Generated: 2026-07-12T07:10:21.705Z
  */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -204,6 +204,38 @@ function getStreams(tmdbId, mediaType, season, episode) {
                 }
               } catch (e) {
                 console.error("Rapidvid fetch error:", e);
+              }
+            }
+            if (decoded && (decoded.includes("vidmoly.to") || decoded.includes("vidmoly.me"))) {
+              try {
+                const vidmolyRes = yield fetch(decoded, {
+                  headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer": "https://www.fullhdfilmizlesene.life/"
+                  }
+                });
+                if (vidmolyRes.ok) {
+                  const vidmolyHtml = yield vidmolyRes.text();
+                  const m3u8Match = vidmolyHtml.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i);
+                  if (m3u8Match) {
+                    const m3u8Url = m3u8Match[1];
+                    streams.push({
+                      name: `FHD [${sourceName}]`,
+                      title: `Vidmoly HLS (TR/EN)`,
+                      url: m3u8Url,
+                      quality: "1080p",
+                      format: "hls",
+                      type: "hls",
+                      headers: {
+                        "Referer": "https://vidmoly.to/",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                      }
+                    });
+                    continue;
+                  }
+                }
+              } catch (e) {
+                console.error("Vidmoly fetch error:", e);
               }
             }
             if (decoded) {

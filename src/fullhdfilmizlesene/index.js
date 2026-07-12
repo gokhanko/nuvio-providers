@@ -196,6 +196,40 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                         }
                     }
                     
+                    if (decoded && (decoded.includes("vidmoly.to") || decoded.includes("vidmoly.me"))) {
+                        try {
+                            const vidmolyRes = await fetch(decoded, {
+                                headers: {
+                                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                    "Referer": "https://www.fullhdfilmizlesene.life/"
+                                }
+                            });
+                            
+                            if (vidmolyRes.ok) {
+                                const vidmolyHtml = await vidmolyRes.text();
+                                const m3u8Match = vidmolyHtml.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i);
+                                if (m3u8Match) {
+                                    const m3u8Url = m3u8Match[1];
+                                    streams.push({
+                                        name: `FHD [${sourceName}]`,
+                                        title: `Vidmoly HLS (TR/EN)`,
+                                        url: m3u8Url,
+                                        quality: "1080p",
+                                        format: "hls",
+                                        type: "hls",
+                                        headers: {
+                                            "Referer": "https://vidmoly.to/",
+                                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                                        }
+                                    });
+                                    continue; // Successfully extracted
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Vidmoly fetch error:", e);
+                        }
+                    }
+                    
                     if (decoded) {
                         streams.push({
                             name: `FHD [${sourceName}]`,
