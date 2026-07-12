@@ -162,7 +162,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                             
                             if (rapidRes.ok) {
                                 const rapidHtml = await rapidRes.text();
-                                const avMatch = rapidHtml.match(/av\(['"]([^'"]+)['"]\)/);
+                                const avMatch = rapidHtml.match(/["']?file["']?\s*:\s*av\(['"]([^'"]+)['"]\)/);
                                 if (avMatch) {
                                     const encodedHls = avMatch[1];
                                     

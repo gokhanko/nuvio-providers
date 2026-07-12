@@ -1,6 +1,6 @@
 /**
  * fullhdfilmizlesene - Built from src/fullhdfilmizlesene/
- * Generated: 2026-07-12T06:51:19.284Z
+ * Generated: 2026-07-12T06:55:05.895Z
  */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -176,7 +176,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
                 });
                 if (rapidRes.ok) {
                   const rapidHtml = yield rapidRes.text();
-                  const avMatch = rapidHtml.match(/av\(['"]([^'"]+)['"]\)/);
+                  const avMatch = rapidHtml.match(/["']?file["']?\s*:\s*av\(['"]([^'"]+)['"]\)/);
                   if (avMatch) {
                     const encodedHls = avMatch[1];
                     let t = atob(encodedHls.split("").reverse().join(""));
