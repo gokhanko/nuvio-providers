@@ -229,7 +229,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                         }
                     }
                     
-                    if (finalUrl && (finalUrl.includes("vidmoly.to") || finalUrl.includes("vidmoly.me"))) {
+                    if (finalUrl && (finalUrl.includes("vidmoly.to") || finalUrl.includes("vidmoly.me") || finalUrl.includes("vidmoxy"))) {
                         try {
                             const vidmolyRes = await fetch(finalUrl, {
                                 headers: {
@@ -252,7 +252,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                                         format: "hls",
                                         type: "hls",
                                         headers: {
-                                            "Referer": "https://vidmoly.to/",
+                                            "Referer": finalUrl.includes("vidmoxy") ? "https://vidmoxy.net/" : "https://vidmoly.to/",
                                             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                                         }
                                     });
@@ -266,7 +266,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                     
                     if (finalUrl) {
                         streams.push({
-                            name: `[DB] ${finalUrl.substring(0, 45)}`,
+                            name: `FHD [${sourceName}]`,
                             title: `Stream ${i}`,
                             url: finalUrl,
                             quality: "1080p",

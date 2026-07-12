@@ -1,6 +1,6 @@
 /**
  * fullhdfilmizlesene - Built from src/fullhdfilmizlesene/
- * Generated: 2026-07-12T07:31:08.829Z
+ * Generated: 2026-07-12T07:39:22.820Z
  */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -234,7 +234,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
                 console.error("Rapidvid fetch error:", e);
               }
             }
-            if (finalUrl && (finalUrl.includes("vidmoly.to") || finalUrl.includes("vidmoly.me"))) {
+            if (finalUrl && (finalUrl.includes("vidmoly.to") || finalUrl.includes("vidmoly.me") || finalUrl.includes("vidmoxy"))) {
               try {
                 const vidmolyRes = yield fetch(finalUrl, {
                   headers: {
@@ -256,7 +256,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
                       format: "hls",
                       type: "hls",
                       headers: {
-                        "Referer": "https://vidmoly.to/",
+                        "Referer": finalUrl.includes("vidmoxy") ? "https://vidmoxy.net/" : "https://vidmoly.to/",
                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                       }
                     });
@@ -269,7 +269,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
             }
             if (finalUrl) {
               streams.push({
-                name: `[DB] ${finalUrl.substring(0, 45)}`,
+                name: `FHD [${sourceName}]`,
                 title: `Stream ${i}`,
                 url: finalUrl,
                 quality: "1080p",
